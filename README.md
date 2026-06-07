@@ -1,3 +1,4 @@
+![Aquarium Preview](preview_aquarium.png)
 # HTML5 Aquarium Animation
 
 A simple 2D aquarium animation built using HTML5 Canvas and JavaScript.
