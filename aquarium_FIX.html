@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aquarium</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #001d3d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+
+        const bubbles = [];
+        const fishes = [];
+        const seaweed = [];
+
+        for (let i = 0; i < 40; i++) {
+            bubbles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: 2 + Math.random() * 8,
+                speed: 1 + Math.random() * 2
+            });
+        }
+
+        for (let i = 0; i < 6; i++) {
+            fishes.push({
+                x: Math.random() * canvas.width,
+                y: 100 + Math.random() * (canvas.height - 250),
+                size: 30 + Math.random() * 30,
+                speed: 1 + Math.random() * 2,
+                color: `hsl(${Math.random() * 360},80%,60%)`
+            });
+        }
+
+        for (let i = 0; i < 20; i++) {
+            seaweed.push({
+                x: i * 80,
+                height: 100 + Math.random() * 120,
+                offset: Math.random() * 5
+            });
+        }
+
+        let angle = 0;
+
+        function animate() {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+
+            gradient.addColorStop(0, "#003566");
+            gradient.addColorStop(1, "#001219");
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "rgba(255,255,255,0.05)";
+            ctx.lineWidth = 25;
+
+            for (let i = 0; i < 8; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * 250, 0);
+                ctx.lineTo(i * 180 + 100, canvas.height);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = "rgba(255,255,255,0.4)";
+
+            for (let b of bubbles) {
+
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                b.y -= b.speed;
+
+                if (b.y < -10) {
+                    b.y = canvas.height + 10;
+                    b.x = Math.random() * canvas.width;
+                }
+            }
+
+            ctx.strokeStyle = "#2a9d8f";
+            ctx.lineWidth = 8;
+
+            for (let s of seaweed) {
+
+                ctx.beginPath();
+
+                ctx.moveTo(s.x, canvas.height);
+
+                ctx.quadraticCurveTo(
+                    s.x + Math.sin(angle + s.offset) * 20,
+                    canvas.height - s.height / 2,
+                    s.x,
+                    canvas.height - s.height
+                );
+
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = "#5c677d";
+
+            for (let i = 0; i < 12; i++) {
+
+                ctx.beginPath();
+
+                ctx.arc(i * 140, canvas.height - 20, 30, 0, Math.PI * 2);
+
+                ctx.fill();
+            }
+
+            for (let f of fishes) {
+
+                ctx.save();
+
+                ctx.translate(f.x, f.y);
+
+                ctx.fillStyle = f.color;
+
+                ctx.beginPath();
+                ctx.ellipse(0, 0, f.size, 20, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-f.size, 0);
+                ctx.lineTo(-f.size - 20, -15);
+                ctx.lineTo(-f.size - 20, 15);
+                ctx.fill();
+
+                ctx.fillStyle = "white";
+
+                ctx.beginPath();
+                ctx.arc(f.size / 2 - 5, -5, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+
+                f.x += f.speed;
+
+                if (f.x > canvas.width + 100) {
+                    f.x = -100;
+                }
+            }
+
+            angle += 0.03;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener("resize", () => {
+
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+
+        });
+
+    </script>
+
+</body>
+
+</html>
